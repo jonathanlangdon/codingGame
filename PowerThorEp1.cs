@@ -1,5 +1,3 @@
-// v1 of Power of Thor - Ep 1 - variables created, but need some troubleshooting
-
 using System;
 using System.Linq;
 using System.IO;
@@ -23,39 +21,43 @@ class Player
         int initialTx = int.Parse(inputs[2]); // Thor's starting X position
         int initialTy = int.Parse(inputs[3]); // Thor's starting Y position
 
+        // Calculating direction needed and displacements
         int displaceX = lightX - initialTx;
+        int displaceY = lightY - initialTy;
+        int distX = Math.Abs(displaceX);
+        int distY = Math.Abs(displaceY);
+        string directionX = "";
+        string directionY = "";
+        if (displaceX > 0) directionX = "E";
+        else directionX = "W";
+        if (displaceY > 0) directionY = "S";
+        else directionY = "N";
+
+        // Console.Error.WriteLine($"distX:{distX}");
+        // Console.Error.WriteLine($"distY:{distY}");
+        // Console.Error.WriteLine($"disrectionX:{directionX}");
+        // Console.Error.WriteLine($"diirectionY:{directionY}");
 
         // game loop
         while (true)
         {
-            int remainingTurns = int.Parse(Console.ReadLine()); // The remaining amount of turns Thor can move. Do not remove this line.
+            int remainingTurns = int.Parse(Console.ReadLine()); 
 
+            string NewDirection = "";
 
-            int displaceY = lightY - initialTy;
-            int distX = Math.Abs(displaceX);
-            int distY = Math.Abs(displaceY);
-            string directionX = "";
-            string directionY = "";
-            if (displaceX > 0) directionX = "E";
-            else directionX = "W";
-            if (displaceY > 0) directionX = "S";
-            else directionX = "N";
-
-
-            // Write an action using Console.WriteLine()
-            // To debug: Console.Error.WriteLine("Debug messages...");
-
-            for (int i = 0; i < distX; i++)
+            if (distY > 0)
             {
-                Console.WriteLine(directionX);
+                NewDirection = directionY;
+                distY -= 1;
             }
 
-            for (int i = 0; i < distY; i++)
+            if (distX > 0)
             {
-                Console.WriteLine(directionY);
+                NewDirection += directionX;
+                distX -= 1;
             }
 
-            // A single line providing the move to be made: N NE E SE S SW W or NW
+            Console.WriteLine(NewDirection);
         }
     }
 }
