@@ -1,10 +1,5 @@
 #!/bin/bash
 
-# Sleep for a random interval between 1 and 30 minutes
-sleep_time=$((RANDOM % 1740 + 60)) # This generates a random number between 60 and 1800
-echo "Sleeping for $sleep_time seconds."
-sleep $sleep_time
-
 todayESTMidnight=$(TZ="America/New_York" date +"%Y-%m-%d 00:00:00")
 echo "Today EST midnight is" $todayESTMidnight
 todayMidnightUTC=$(date -u -d "$todayESTMidnight - 3 hours" "+%s")
