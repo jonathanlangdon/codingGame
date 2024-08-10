@@ -1,4 +1,4 @@
-// make Batman find bomb... passes first 3 tests
+// make Batman find bomb... passes first 3 tests... but need to troubleshoot GetHalf function
 
 using System;
 using System.Linq;

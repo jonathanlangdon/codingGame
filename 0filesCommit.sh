@@ -27,6 +27,7 @@ if [ -n "$(ls -A ./0staging)" ]; then
 
     # Get the first line of the file in the 0staging directory
     comment=$(head -n 1 "$file")
+    echo "git comment: $comment"
 
     # Move the file to the current directory
     mv -i "$file" .
