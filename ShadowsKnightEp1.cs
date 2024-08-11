@@ -1,4 +1,4 @@
-// make Batman find bomb... passes first 3 tests... but need to troubleshoot GetHalf function
+// passes first 5 tests... need to change function.
 
 using System;
 using System.Linq;
@@ -23,23 +23,45 @@ class Player
         inputs = Console.ReadLine().Split(' ');
         int X0 = int.Parse(inputs[0]);
         int Y0 = int.Parse(inputs[1]);
-        int HalfFactor = 2;
-        int HalfToRight = GetHalf(X0, W);
-        int HalfToLeft = GetHalf(X0, 0);
-        int HalfToDown = GetHalf(Y0, H);
-        int HalfToUp = GetHalf(Y0, 0);
+        
+        
+		int MoveCount = 1;
+		int InitialGapY = 0;
+		int InitialGapX = 0;
 
-        Console.Error.WriteLine($"HTR:{HalfToRight}, HTD:{HalfToDown}");
+		int NextYPosition(string direction)
+		{
+			if (direction.Contains("U"))
+			{
+				return Y0 - (int)Math.Ceiling((InitialGapY / Math.Pow(2, MoveCount)));
+			}
+			if (direction.Contains("D"))
+			{
+				return Y0 + (int)Math.Ceiling((InitialGapY / Math.Pow(2, MoveCount)));
+			}
+			else return Y0;
+		}
 
-        int GetHalf(int position, int edge)
-        {
-            return (int)Math.Ceiling((double)(position + edge) / 2);
-        }
+        int NextXPosition(string direction)
+		{
+			if (direction.Contains("L"))
+			{
+				return X0 - (int)Math.Ceiling((InitialGapX / Math.Pow(2, MoveCount)));
+			}
+			if (direction.Contains("R"))
+			{
+				return X0 + (int)Math.Ceiling((InitialGapX / Math.Pow(2, MoveCount)));
+			}
+			else return X0;
+		}
 
         // game loop
         while (true)
         {
             string bombDir = Console.ReadLine(); // the direction of the bombs from batman's current location (U, UR, R, DR, D, DL, L or UL)
+
+            InitialGapY = bombDir.Contains("U") ? Y0 : bombDir.Contains("D") ? H - Y0 : 0;
+            InitialGapX = bombDir.Contains("L") ? X0 : bombDir.Contains("R") ? W - X0 : 0;
 
             // Write an action using Console.WriteLine()
             // To debug: Console.Error.WriteLine("Debug messages...");
@@ -49,11 +71,11 @@ class Player
 
             // the location of the next window Batman should jump to.
             
-            Y0 = (bombDir.Contains("U") ? -HalfToUp : bombDir.Contains("D") ? HalfToDown : Y0);
-            X0 = (bombDir.Contains("L") ? -HalfToLeft : bombDir.Contains("R") ? HalfToRight : X0);
+            Y0 = NextYPosition(bombDir);
+            X0 = NextXPosition(bombDir);
             Console.Error.WriteLine($"Going to {X0} {Y0}");
             Console.WriteLine($"{X0} {Y0}");
-            HalfFactor *= 2;
+            MoveCount += 1;
         }
     }
 }
