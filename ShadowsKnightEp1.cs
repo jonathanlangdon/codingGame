@@ -1,4 +1,4 @@
-// passes first 5 tests... need to change function.
+// passed all tests
 
 using System;
 using System.Linq;
@@ -25,34 +25,82 @@ class Player
         int Y0 = int.Parse(inputs[1]);
         
         
-		int MoveCount = 1;
-		int InitialGapY = 0;
-		int InitialGapX = 0;
+		List<int> PossibleY = new List<int>();
+		List<int> PossibleX = new List<int>();
+		int MovesMade = 0;
 
-		int NextYPosition(string direction)
+		int NextPosition(string direction, string axis)
 		{
-			if (direction.Contains("U"))
-			{
-				return Y0 - (int)Math.Ceiling((InitialGapY / Math.Pow(2, MoveCount)));
-			}
-			if (direction.Contains("D"))
-			{
-				return Y0 + (int)Math.Ceiling((InitialGapY / Math.Pow(2, MoveCount)));
-			}
-			else return Y0;
+            if (axis == "Y")
+            {
+			    return PossibleY[PossibleY.Count() / 2];
+            }
+            else if (axis == "X")
+            {
+                return PossibleX[PossibleX.Count() / 2];   
+            }
+            else return 0;
 		}
 
-        int NextXPosition(string direction)
+
+		void InitialPossible(string direction, string vertex)
 		{
-			if (direction.Contains("L"))
+			int Position = 0;
+			int Max = 0;
+			if (vertex == "Y")
 			{
-				return X0 - (int)Math.Ceiling((InitialGapX / Math.Pow(2, MoveCount)));
+				Position = Y0;
+				Max = H - 1;
 			}
-			if (direction.Contains("R"))
+			else if (vertex == "X")
 			{
-				return X0 + (int)Math.Ceiling((InitialGapX / Math.Pow(2, MoveCount)));
+				Position = X0;
+				Max = W - 1;
 			}
-			else return X0;
+			int FirstY = direction == "L" ? 0 : direction == "G" ? Position + 1 : Position;
+			int CountPossible = direction == "L" ? Position - 1 : direction == "G" ? Max - Position : 1;
+			if (vertex == "Y")
+			{
+				PossibleY = Enumerable.Range(FirstY, CountPossible).ToList();
+			}
+			else if (vertex == "X")
+			{
+				PossibleX = Enumerable.Range(FirstY, CountPossible).ToList();
+                Console.Error.WriteLine($"X Possible: {String.Join(", ", PossibleX)}");
+			}
+		}
+
+		void UpdatePossible(string direction, string vertex)
+		{
+			List<int> ActiveList = new List<int>();
+			int Position = 0;
+
+			if(vertex == "Y")
+			{
+				ActiveList = PossibleY;
+				Position = Y0;
+			}
+			else if (vertex == "X")
+			{
+				ActiveList = PossibleX;
+				Position = X0;
+			}
+            if (direction == "L")
+            {
+                ActiveList = ActiveList.Where(y => y < Position).ToList();
+            }
+            if (direction == "G")
+            {
+                ActiveList = ActiveList.Where(y => y > Position).ToList();
+            }
+			if(vertex == "Y")
+			{
+				PossibleY = ActiveList;
+			}
+			else if (vertex == "X")
+			{
+				PossibleX = ActiveList;
+			}
 		}
 
         // game loop
@@ -60,22 +108,33 @@ class Player
         {
             string bombDir = Console.ReadLine(); // the direction of the bombs from batman's current location (U, UR, R, DR, D, DL, L or UL)
 
-            InitialGapY = bombDir.Contains("U") ? Y0 : bombDir.Contains("D") ? H - Y0 : 0;
-            InitialGapX = bombDir.Contains("L") ? X0 : bombDir.Contains("R") ? W - X0 : 0;
-
             // Write an action using Console.WriteLine()
             // To debug: Console.Error.WriteLine("Debug messages...");
             Console.Error.WriteLine(bombDir);
             Console.Error.WriteLine($"starting x:{X0}, y:{Y0}");
             Console.Error.WriteLine($"building dimen W:{W}, H:{H}");
 
+                        // G = greater, L = Less
+			string DirectionY = bombDir.Contains("U") ? "L" : bombDir.Contains("D") ? "G" : "No";
+			string DirectionX = bombDir.Contains("L") ? "L" : bombDir.Contains("R") ? "G" : "No";
+
+			if(MovesMade == 0) 
+			{
+				InitialPossible(DirectionY, "Y");
+				InitialPossible(DirectionX, "X");
+			}
+			else
+			{
+				UpdatePossible(DirectionY, "Y");
+				UpdatePossible(DirectionX, "X");
+			}
+			MovesMade += 1;
+			Y0 = NextPosition(DirectionY, "Y");
+			X0 = NextPosition(DirectionX, "X");
+
             // the location of the next window Batman should jump to.
-            
-            Y0 = NextYPosition(bombDir);
-            X0 = NextXPosition(bombDir);
             Console.Error.WriteLine($"Going to {X0} {Y0}");
             Console.WriteLine($"{X0} {Y0}");
-            MoveCount += 1;
         }
     }
 }
